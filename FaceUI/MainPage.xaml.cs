@@ -1,5 +1,7 @@
-﻿using System;
+﻿using FaceTracker;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -24,7 +26,18 @@ namespace FaceUI
     {
         public MainPage()
         {
-            this.InitializeComponent();
+            this.InitializeComponent(); //UI only
+
+            //for the time being, this is playing the role of FaceManager
+
+
+            //get a face image
+            //var image = "";
+            //send image to FaceTracker
+            //var imageBytes = Tracker.ConvertToByteArray(image);
+            var image= File.ReadAllBytes("D:/Downloads/Faces/neutral.jpg");
+            var (emotion, direction) = Tracker.Analyze(image);
+
         }
     }
 }
