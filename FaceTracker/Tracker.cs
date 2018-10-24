@@ -1,6 +1,7 @@
 ﻿using Microsoft.Azure.CognitiveServices.Vision.Face;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace FaceTracker
             faceClient = new FaceClient(
                 new ApiKeyServiceClientCredentials(key),
                 new System.Net.Http.DelegatingHandler[] { });
-            faceClient.Endpoint = "https://southcentralus.api.cognitive.microsoft.com/face/v1.0"; //TODO: put this in a config file
+            faceClient.Endpoint = "https://southcentralus.api.cognitive.microsoft.com"; ///face/v1.0"; //TODO: put this in a config file
         }
 
         /// <summary>
@@ -35,6 +36,7 @@ namespace FaceTracker
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
+                Debug.WriteLine(e);
                 return (Emotion.Neutral, Direction.Center); //default face
             }
         }
