@@ -35,8 +35,15 @@ namespace FaceUI
             //var image = "";
             //send image to FaceTracker
             //var imageBytes = Tracker.ConvertToByteArray(image);
-            var image= File.ReadAllBytes("D:/Downloads/Faces/neutral.jpg");
-            var (emotion, direction) = Tracker.Analyze(image);
+            var imageFilePath = "D:/Downloads/Faces/neutral.jpg";
+            var faceTracker = new Tracker();
+
+            using (Stream imageFileStream = File.OpenRead(imageFilePath))
+            {
+                var (emotion, direction) = faceTracker.Analyze(imageFileStream).GetAwaiter().GetResult();
+                Debug.WriteLine(emotion);
+                Debug.WriteLine(direction);
+            }
 
         }
     }

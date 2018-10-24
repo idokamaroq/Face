@@ -1,21 +1,60 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.Azure.CognitiveServices.Vision.Face;
+using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using System;
+using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FaceTracker
 {
-    public static class Tracker
+    public class Tracker
     {
+        private readonly IFaceClient faceClient;
+
+        public Tracker()
+        {
+            var key = Environment.GetEnvironmentVariable("FaceAPI_KEY");
+            faceClient = new FaceClient(
+                new ApiKeyServiceClientCredentials(key),
+                new System.Net.Http.DelegatingHandler[] { });
+            faceClient.Endpoint = "https://southcentralus.api.cognitive.microsoft.com/face/v1.0"; //TODO: put this in a config file
+        }
+
         /// <summary>
         /// Determines the emotion and gaze direction of a face in an image
         /// </summary>
         /// <param name="image">Picture of a face</param>
         /// <returns></returns>
-        public static (Emotion Emotion, Direction GazeDirection) Analyze(byte[] image)
+        public async Task<(Emotion Emotion, Direction GazeDirection)> Analyze(Stream imageFileStream)
         {
-            return (GetEmotion(image), GetGazeDirection(image));
+            try
+            {
+                var face = await UploadAndDetectFace(imageFileStream);
+                return (GetEmotion(face), GetGazeDirection(face));
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return (Emotion.Neutral, Direction.Center); //default face
+            }
+        }
+
+        private async Task<DetectedFace> UploadAndDetectFace(Stream imageFileStream)
+        {
+            // The list of Face attributes to get
+            var faceAttributes = new FaceAttributeType[]
+            {
+                //FaceAttributeType.Smile, //might be able to do cool stuff with this in the future
+                FaceAttributeType.Emotion
+            };
+
+            var faceList = await faceClient.Face.DetectWithStreamAsync(
+                imageFileStream, 
+                false, //get faceId
+                true, //get face landmarks
+                faceAttributes);
+
+            return faceList.SingleOrDefault(); //if it picked up more than one face, something is wrong
         }
 
         /// <summary>
@@ -23,7 +62,7 @@ namespace FaceTracker
         /// </summary>
         /// <param name="image"></param>
         /// <returns></returns>
-        private static Emotion GetEmotion(byte[] image)
+        private static Emotion GetEmotion(DetectedFace face)
         {
             throw new NotImplementedException();
         }
@@ -33,9 +72,9 @@ namespace FaceTracker
         /// </summary>
         /// <param name="image"></param>
         /// <returns></returns>
-        private static Direction GetGazeDirection(byte[] image)
+        private static Direction GetGazeDirection(DetectedFace face)
         {
-            //Dunno how I'm gonna do this yet. Might be infeasible
+            //compare differences in x-coordinates of pupils and nose tip
             throw new NotImplementedException();
         }
 
