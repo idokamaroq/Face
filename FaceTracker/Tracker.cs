@@ -50,7 +50,7 @@ namespace FaceTracker
                 FaceAttributeType.Emotion
             };
 
-            var faceList = await faceClient.Face.DetectWithStreamAsync(
+            var faceList = await faceClient.Face.DetectWithStreamAsync( //TODO: this is getting a 404 I think
                 imageFileStream, 
                 false, //get faceId
                 true, //get face landmarks
