@@ -47,7 +47,7 @@ namespace FaceUI
 
             var faceTracker = new Tracker();
 
-            var imageFilePath = "TestFaces/face.jpg"; //d:\Documents\Visual Studio 2017\Projects\Face\FaceUI\face.jpg
+            var imageFilePath = "TestFaces/face.jpg";
             using (Stream imageFileStream = File.OpenRead(imageFilePath))
             {
                 var (emotion, direction) = faceTracker.Analyze(imageFileStream).GetAwaiter().GetResult();

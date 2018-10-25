@@ -1,30 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FaceTracker
+﻿namespace FaceTracker
 {
     /// <summary>
     /// From Microsoft's Face API
     /// </summary>
     public enum Emotion
     {
-        Angry,
-        Contemptuous,
-        Disgusted,
-        Fearful,
-        Happy,
         Neutral,
-        Sad,
-        Surprised
+        Anger,
+        Contempt,
+        Disgust,
+        Fear,
+        Happiness,
+        Sadness,
+        Surprise
     }
 
     public enum Direction
     {
-        Left,
         Center,
+        Left,
         Right
     }
 }

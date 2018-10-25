@@ -1,6 +1,8 @@
 ﻿using Microsoft.Azure.CognitiveServices.Vision.Face;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -68,7 +70,15 @@ namespace FaceTracker
         /// <returns></returns>
         private static Emotion GetEmotion(DetectedFace face)
         {
-            throw new NotImplementedException();
+            //Since Face API returns an object with properties for each emotion
+            //with the corresponding confidence level, you have to check each
+            //one to see which is the max.
+            //It would be more efficient to write an if statement for each emotion
+            //and keep a running max value, but this is way cleaner code.
+            var json = JsonConvert.SerializeObject(face.FaceAttributes.Emotion);
+            var dict = JsonConvert.DeserializeObject<Dictionary<Emotion, double>>(json);
+            var emotion = dict.Keys.Aggregate((x, y) => dict[x] > dict[y] ? x : y); //goes through the dictionary and compares each value with the next
+            return emotion;
         }
 
         /// <summary>
