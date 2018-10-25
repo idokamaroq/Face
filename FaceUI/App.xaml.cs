@@ -47,6 +47,8 @@ namespace FaceUI
 
             var faceTracker = new Tracker();
 
+            //TODO: put this in a timer loop
+            //  also pause for 1s if there's a change?
             var imageFilePath = "TestFaces/face.jpg";
             using (Stream imageFileStream = File.OpenRead(imageFilePath))
             {

@@ -54,6 +54,7 @@ namespace FaceTracker
                 FaceAttributeType.Emotion
             };
 
+            //TODO: put this in some kind of timeout
             var faceList = await faceClient.Face.DetectWithStreamAsync(
                 imageFileStream,
                 false, //get faceId
@@ -71,10 +72,10 @@ namespace FaceTracker
         private static Emotion GetEmotion(DetectedFace face)
         {
             //Since Face API returns an object with properties for each emotion
-            //with the corresponding confidence level, you have to check each
-            //one to see which is the max.
+            //  with the corresponding confidence level, you have to check each
+            //  one to see which is the max.
             //It would be more efficient to write an if statement for each emotion
-            //and keep a running max value, but this is way cleaner code.
+            //  and keep a running max value, but this is way cleaner code.
             var json = JsonConvert.SerializeObject(face.FaceAttributes.Emotion);
             var dict = JsonConvert.DeserializeObject<Dictionary<Emotion, double>>(json);
             var emotion = dict.Keys.Aggregate((x, y) => dict[x] > dict[y] ? x : y); //goes through the dictionary and compares each value with the next
@@ -88,18 +89,20 @@ namespace FaceTracker
         /// <returns></returns>
         private static Direction GetGazeDirection(DetectedFace face)
         {
-            //compare differences in x-coordinates of pupils and nose tip
-            throw new NotImplementedException();
-        }
+            //TODO: this probably needs to be tuned
+            const double threshold = 0.925;
 
-        /// <summary>
-        /// Converts an image to a byte array
-        /// </summary>
-        /// <param name="image"></param>
-        /// <returns></returns>
-        public static byte[] ConvertToByteArray(object image)
-        {
-            throw new NotImplementedException();
+            var pupilLeft = face.FaceLandmarks.PupilLeft.X;
+            var pupilRight = face.FaceLandmarks.PupilRight.X;
+            var nose = face.FaceLandmarks.NoseTip.X;
+            
+            var distanceLeft = nose - pupilLeft;
+            var distanceRight = pupilRight - nose;
+
+            if (distanceLeft / distanceRight < threshold) return Direction.Left;
+            if (distanceRight / distanceLeft < threshold) return Direction.Right;
+            return Direction.Center;
+            //Something to try in the future: check amount of white on each side of pupils
         }
     }
 }
