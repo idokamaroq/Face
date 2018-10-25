@@ -14,11 +14,14 @@ namespace FaceTracker
 
         public Tracker()
         {
-            var key = Environment.GetEnvironmentVariable("FaceAPI_KEY");
+            //TODO: store these somewhere
+            var key = "";
+            var endpoint = "https://southcentralus.api.cognitive.microsoft.com";
+
             faceClient = new FaceClient(
                 new ApiKeyServiceClientCredentials(key),
                 new System.Net.Http.DelegatingHandler[] { });
-            faceClient.Endpoint = "https://southcentralus.api.cognitive.microsoft.com"; ///face/v1.0"; //TODO: put this in a config file
+            faceClient.Endpoint = endpoint;
         }
 
         /// <summary>
@@ -46,12 +49,11 @@ namespace FaceTracker
             // The list of Face attributes to get
             var faceAttributes = new FaceAttributeType[]
             {
-                //FaceAttributeType.Smile, //might be able to do cool stuff with this in the future
                 FaceAttributeType.Emotion
             };
 
-            var faceList = await faceClient.Face.DetectWithStreamAsync( //TODO: this is getting a 404 I think
-                imageFileStream, 
+            var faceList = await faceClient.Face.DetectWithStreamAsync(
+                imageFileStream,
                 false, //get faceId
                 true, //get face landmarks
                 faceAttributes);
